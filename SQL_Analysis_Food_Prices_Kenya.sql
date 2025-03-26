@@ -78,9 +78,9 @@ FROM wfp_food_prices_ken;
 -- Step 6: Analyze Monthly Price Trends
 WITH MonthlyTrends AS (
     SELECT 
-        DATEADD(MONTH, DATEDIFF(MONTH, 0, date), 0) AS month, -- Extract the month
+        CONVERT(DATE, DATEADD(MONTH, DATEDIFF(MONTH, 0, date), 0)) AS month, -- Extract the month
         item_name, -- Commodity name
-        ROUND(AVG(value), 2) AS avg_price -- Properly round the average price to 2 decimal places
+        CAST(ROUND(AVG(value),2) AS DECIMAL (10,2)) AS avg_price -- Properly round the average price to 2 decimal places
     FROM 
         #Cleaned_Food_Prices
     GROUP BY 
@@ -98,7 +98,7 @@ WITH RegionalComparisons AS (
     SELECT 
         adm1_name AS region, 
         item_name, 
-        ROUND(AVG(value), 2) AS avg_price -- Properly round the average price
+        CAST(ROUND(AVG(value), 2) AS DECIMAL (10,2)) AS avg_price -- Properly round the average price
     FROM 
         #Cleaned_Food_Prices
     GROUP BY 
@@ -116,7 +116,7 @@ WITH Volatility AS (
     SELECT 
         item_name, 
         ROUND(STDEV(value), 2) AS price_volatility, -- Calculate price volatility
-        ROUND(AVG(value), 2) AS avg_price -- Properly round the average price
+        CAST(ROUND(AVG(value), 2) AS DECIMAL (10,2)) AS avg_price -- Properly round the average price
     FROM 
         #Cleaned_Food_Prices
     GROUP BY 
@@ -132,7 +132,7 @@ WITH MarketAnalysis AS (
     SELECT 
         loc_market_name AS market, 
         item_name, 
-        ROUND(AVG(value), 2) AS avg_price -- Properly round the average price
+        CAST(ROUND(AVG(value), 2) AS DECIMAL (10,2)) AS avg_price -- Properly round the average price
     FROM 
         #Cleaned_Food_Prices
     GROUP BY 
@@ -150,8 +150,8 @@ WITH YearlyAverages AS (
         YEAR(date) AS year, 
         item_name, 
         loc_market_name, 
-        ROUND(AVG(value), 2) AS avg_price, -- Properly round the average price
-        ROUND(AVG(value_usd), 2) AS avg_usd_price -- Properly round the average USD price
+        CAST(ROUND(AVG(value), 2) AS DECIMAL (10,2)) AS avg_price, -- Properly round the average price
+        CAST(ROUND(AVG(value_usd), 2) AS DECIMAL (10,2)) AS avg_usd_price -- Properly round the average USD price
     FROM 
         #Cleaned_Food_Prices
     GROUP BY 
